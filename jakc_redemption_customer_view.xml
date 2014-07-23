@@ -1,0 +1,80 @@
+<openerp>
+    <data>
+        <!-- RDM/CUSTOMER-->		
+        <record model="ir.ui.view" id="view_rdm_customer_form">
+            <field name="name">rdm.customer.form</field>
+            <field name="model">rdm.customer</field>						
+            <field name="type">form</field>						
+            <field name="arch" type="xml">
+                <form string="Customer">  
+                    <group colspan="4">                            
+                        <field name="name"/>
+                        <field name="type"/>                        
+                        <field name="old_ayc_number"/>                            
+                        <field name="ayc_number"/>
+                        <field name="card_type"/>
+                        <field name="social_id"/>                        
+                    </group>
+                    <notebook colspan="4">
+                        <page string="General">                            
+                            <field name="birth_place"/>
+                            <field name="birth_date"/>                            
+                            <field name="gender"/>
+                            <field name="ethnic"/>
+                            <field name="religion"/>
+                            <field name="marital"/>
+                            <field name="type"/>                                                                                    
+                        </page>
+                        <page string="Address">                            
+                            <field name="address"/>
+                            <field name="province"/>
+                            <field name="city"/>
+                            <field name="zipcode"/>
+                            <field name="type"/>                                                                                       
+                        </page>
+                        <page string="Contact Info">
+                            <field name="phone1"/>
+                            <field name="phone2"/>
+                            <field name="mobile_phone1"/>
+                            <field name="mobile_phone2"/>
+                            <field name="email"/>                                                           
+                        </page>
+                        <page string="Others">                            
+                            <field name="education"/>                        
+                            <field name="interest"/>                        
+                            <field name="ref_id"/>                        
+                            <field name="receive_email"/>                        
+                            <field name="join_date"/>                                                                                   
+                        </page>                        
+                    </notebook>
+                </form>
+            </field>
+        </record>
+		
+        <record model="ir.ui.view" id="view_rdm_customer_tree">
+            <field name="name">rdm.customer.tree</field>
+            <field name="model">rdm.customer</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Customer">
+                    <field name="ayc_number"/>
+                    <field name="old_ayc_number"/>
+                    <field name="name"/>	
+                    <field name="card_type"/>		
+                    <field name="social_id"/>
+                    <field name="birth_date"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- RDM/ACTION -->
+        <!-- CUSTOMER -->
+	<record model="ir.actions.act_window" id="action_rdm_customer">
+            <field name="name">Customer</field>
+            <field name="res_model">rdm.customer</field>
+            <field name="view_mode">tree,form</field>
+        </record>		
+        <!-- MENU -->
+          
+    </data>
+</openerp>

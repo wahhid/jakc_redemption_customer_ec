@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rdm_customer_manager,rdm.customer.manager,model_rdm_customer,base.group_rdm_manager,1,1,1,1
+access_rdm_customer_operator,rdm.customer.operator,model_rdm_customer,base.group_rdm_operator,1,1,1,0
