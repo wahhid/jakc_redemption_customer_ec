@@ -6,47 +6,65 @@
             <field name="model">rdm.customer</field>						
             <field name="type">form</field>						
             <field name="arch" type="xml">
-                <form string="Customer">  
-                    <group colspan="4">                            
-                        <field name="name"/>
-                        <field name="type"/>                        
-                        <field name="old_ayc_number"/>                            
-                        <field name="ayc_number"/>
-                        <field name="card_type"/>
-                        <field name="social_id"/>                        
-                    </group>
-                    <notebook colspan="4">
-                        <page string="General">                            
-                            <field name="birth_place"/>
-                            <field name="birth_date"/>                            
-                            <field name="gender"/>
-                            <field name="ethnic"/>
-                            <field name="religion"/>
-                            <field name="marital"/>
-                            <field name="type"/>                                                                                    
-                        </page>
-                        <page string="Address">                            
-                            <field name="address"/>
-                            <field name="province"/>
-                            <field name="city"/>
-                            <field name="zipcode"/>
-                            <field name="type"/>                                                                                       
-                        </page>
-                        <page string="Contact Info">
-                            <field name="phone1"/>
-                            <field name="phone2"/>
-                            <field name="mobile_phone1"/>
-                            <field name="mobile_phone2"/>
-                            <field name="email"/>                                                           
-                        </page>
-                        <page string="Others">                            
-                            <field name="education"/>                        
-                            <field name="interest"/>                        
-                            <field name="ref_id"/>                        
-                            <field name="receive_email"/>                        
-                            <field name="join_date"/>                                                                                   
-                        </page>                        
-                    </notebook>
+                <form string="Customer" version="7.0">
+					<header>                        
+                        <button name="set_black_list" string="Black List" type="object" class="oe_highlight" states='active'/>
+                        <button name="set_remove_black_list" string="Undo Black List" type="object" class="oe_highlight" states='blacklist'/>                        
+                        <button name="set_disable" string="Disable" type="object" class="oe_highlight" states='active'/>
+						<button name="set_enable" string="Enable" type="object" class="oe_highlight" states='disable'/>	                                                                                                         
+                    </header>	                	
+					<sheet>
+	                    <group colspan="4">                            
+	                        <field name="name"/>
+							<field name="title" attrs="{'invisible':[('contact_type','=','customer')]}"/>                        						
+	                        <field name="type"/>                        
+	                        <field name="old_ayc_number"/>                            
+	                        <field name="ayc_number"/>
+	                        <field name="card_type"/>
+	                        <field name="social_id"/>
+	                        <field name="state"/>
+	                        <field name="contact_type" attrs="{'invisible':1}"/>                               
+	                    </group>
+	                    <notebook colspan="4">
+	                        <page string="General">	   
+	                        	<group>
+		                            <field name="birth_place"/>                        	    	                           
+		                            <field name="birth_date"/>	                                               
+		                            <field name="gender"/>								                 
+		                            <field name="ethnic"/>								                      
+		                            <field name="religion"/>								                      
+		                            <field name="marital"/>								                           
+		                            <field name="type"/>                                                                                    	                        			                        	
+	                        	</group>                    	                        
+	                        </page>
+	                        <page string="Address">	                   
+								<group>
+		                            <field name="address"/>								           
+		                            <field name="province"/>								     
+		                            <field name="city"/>								          
+		                            <field name="zipcode"/>																										
+								</group>    	                      
+	                        </page>
+	                        <page string="Contact Info">					
+	                        	<group>
+		                            <field name="phone1"/>								                           
+		                            <field name="phone2"/>								                           
+		                            <field name="mobile_phone1"/>								                           
+		                            <field name="mobile_phone2"/>								                       
+		                            <field name="email"/>                                                           	                        			                        		
+	                        	</group>				                        
+	                        </page>
+	                        <page string="Others">	               
+	                        	<group>
+		                            <field name="education"/>	                            
+		                            <field name="interest"/>	                                                   
+		                            <field name="ref_id"/>	                                                   
+		                            <field name="receive_email"/>	                                                   
+		                            <field name="join_date"/>                                                                                   	                        			                        	
+	                        	</group>         	                         
+	                        </page>                        
+	                    </notebook>												
+					</sheet>                    
                 </form>
             </field>
         </record>
@@ -63,18 +81,61 @@
                     <field name="card_type"/>		
                     <field name="social_id"/>
                     <field name="birth_date"/>
+ 				    <field name="state"/>	                   
                 </tree>
             </field>
         </record>
         
         <!-- RDM/ACTION -->
         <!-- CUSTOMER -->
-	<record model="ir.actions.act_window" id="action_rdm_customer">
-            <field name="name">Customer</field>
+        <record model="ir.ui.view" id="view_rdm_customer_filter">
+            <field name="name">rdm.customer.select</field>
+            <field name="model">rdm.customer</field>
+            <field name="arch" type="xml">
+                <search string="Search Customer">
+				   <field name="ayc_number"/>
+				   <field name="old_ayc_number"/>              	
+                   <field name="name"/>                                     
+                   <separator/>
+                   <filter string="Customer" name="contact_type_customer" domain="[('contact_type','=','customer')]"/>
+                   <filter string="Tenant Contact" name="contact_type_tenant" domain="[('contact_type','=','tenant')]"/> 				   	                 
+               </search>
+            </field>
+        </record>    
+        
+		<record model="ir.actions.act_window" id="action_rdm_customer">
+            <field name="name">Customer</field>           
+            <field name="type">ir.actions.act_window</field>
             <field name="res_model">rdm.customer</field>
-            <field name="view_mode">tree,form</field>
-        </record>		
-        <!-- MENU -->
-          
+            <field name="view_mode">tree,form</field>		
+			<field name="context">{"search_default_contact_type_customer":1}</field>            
+           	<field name="search_view_id" ref="view_rdm_customer_filter"/>           
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to add a contact in your address book.
+              </p><p>
+                OpenERP helps you easily track all activities related to
+                a customer; discussions, history of business opportunities,
+                documents, etc.
+              </p>
+            </field>
+        </record>	
+        
+        
+		<record model="ir.actions.act_window.view" id="action_rdm_customer_tree" >
+            <field name="sequence" eval="0"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_rdm_customer_tree"/>             			        
+            <field name="act_window_id" ref="action_rdm_customer"/>
+        </record>        
+        
+        <record model="ir.actions.act_window.view" id="action_rdm_customer_form" >
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_rdm_customer_form"/> 		            		          
+            <field name="act_window_id" ref="action_rdm_customer"/>
+        </record>                         
+
+
     </data>
 </openerp>
