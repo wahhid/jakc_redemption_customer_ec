@@ -25,7 +25,7 @@ class rdm_customer(osv.osv):
     def set_black_list(self, cr, uid, id, context=None):
         _logger.info("Blacklist ID : " + str(id))    
         self.write(cr,uid,id,{'state': 'blacklist'},context=context)
-        #email_data = {}
+        #email_data = {}*
         #email_data['start_logger'] = 'Start Request Customer Blacklist Notification'
         #email_data['email_from'] = 'whidayat@taman-anggrek-mall.com'
         #email_data['email_to'] = 'whidayat@taman-anggrek-mall.com'
@@ -48,9 +48,7 @@ class rdm_customer(osv.osv):
     def set_enable(self, cr, uid, id, context=None):
         _logger.info("Reset activate ID : " + str(id))    
         self.write(cr,uid,id,{'state': 'active'},context=context)              
-        return True
-    
-    
+        return True    
         
     def _send_email_notification(self, cr, uid, values, context=None):
         _logger.info(values['start_logger'])
@@ -64,8 +62,6 @@ class rdm_customer(osv.osv):
             }, context=context))
         mail_mail.send(cr, uid, mail_ids, context=context)
         _logger.info(values['end_logger'])          
-    
-
             
 
     _columns = {                    
@@ -114,8 +110,10 @@ class rdm_customer(osv.osv):
             tenant_id = values['tenant_id']
             if tenant_id is not None:
                 values.update({'contact_type': 'tenant'})                            
-        id =  super(rdm_customer, self).create(cr, uid, values, context=context)
+        id =  super(rdm_customer, self).create(cr, uid, values, context=context)    
         self.set_enable(cr, uid, [id], context)
+        #Send Email Notification
+        
         return id                            
     
 rdm_customer()

@@ -86,6 +86,18 @@
             </field>
         </record>
         
+        
+		<record model="ir.ui.view" id="view_rdm_customer_graph">
+            <field name="name">rdm.customer.graph</field>
+            <field name="model">rdm.customer</field>
+            <field name="type">graph</field>
+            <field name="arch" type="xml">
+                <graph string="Customer" orientation="horizontal" type="bar">
+                    <field name="zone" group="True"/>                    
+                </graph>
+            </field>
+        </record>  		
+              
         <!-- RDM/ACTION -->
         <!-- CUSTOMER -->
         <record model="ir.ui.view" id="view_rdm_customer_filter">
@@ -96,9 +108,14 @@
 				   <field name="ayc_number"/>
 				   <field name="old_ayc_number"/>              	
                    <field name="name"/>                                     
+				   <field name="social_id"/>
+				   <field name="birth_date"/>                   	
                    <separator/>
                    <filter string="Customer" name="contact_type_customer" domain="[('contact_type','=','customer')]"/>
-                   <filter string="Tenant Contact" name="contact_type_tenant" domain="[('contact_type','=','tenant')]"/> 				   	                 
+                   <filter string="Tenant Contact" name="contact_type_tenant" domain="[('contact_type','=','tenant')]"/>
+                   <filter string="Black List" name="blacklist_customer" domain="[('state','=','blacklist')]"/>
+                   <filter string="Disable" name="disable_customer" domain="[('state','=','disable')]"/>
+                    				   	                 
                </search>
             </field>
         </record>    
@@ -107,7 +124,7 @@
             <field name="name">Customer</field>           
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">rdm.customer</field>
-            <field name="view_mode">tree,form</field>		
+            <field name="view_mode">tree,form,graph</field>		
 			<field name="context">{"search_default_contact_type_customer":1}</field>            
            	<field name="search_view_id" ref="view_rdm_customer_filter"/>           
             <field name="help" type="html">
