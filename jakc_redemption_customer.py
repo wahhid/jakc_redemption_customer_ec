@@ -117,3 +117,16 @@ class rdm_customer(osv.osv):
         return id                            
     
 rdm_customer()
+
+class rdm_customer_config(osv.osv):
+    _name = 'rdm.customer.config'
+    _description = 'Redemption Customer Config'
+    _columns = {
+        'new_customer_point_enable': fields.boolean('New Customer Point Enable'),
+        'new_customer_point_numbers': fields.integer('New Customer Point Numbers'),
+        'new_customer_point_ref_enable': fields.boolean('New Customer Point Ref Enable'),
+        'new_customer_point_ref_numbers': fields.integer('New Customer Point Ref Numbers'),
+    }
+
+rdm_customer_config()
+    
