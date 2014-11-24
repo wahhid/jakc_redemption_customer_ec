@@ -50,6 +50,9 @@ class rdm_customer(osv.osv):
         self.write(cr,uid,id,{'state': 'active'},context=context)              
         return True    
         
+    def _referal_process(self, cr, uid, id, context=None):
+        return True 
+    
     def _send_email_notification(self, cr, uid, values, context=None):
         _logger.info(values['start_logger'])
         mail_mail = self.pool.get('mail.mail')
@@ -112,6 +115,7 @@ class rdm_customer(osv.osv):
                 values.update({'contact_type': 'tenant'})                            
         id =  super(rdm_customer, self).create(cr, uid, values, context=context)    
         self.set_enable(cr, uid, [id], context)
+        self._referal_process(cr, uid, [id], context)
         #Send Email Notification
         
         return id                            

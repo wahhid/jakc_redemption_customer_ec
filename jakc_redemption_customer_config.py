@@ -3,7 +3,6 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-
 class rdm_customer_config(osv.osv):
     _name = 'rdm.customer.config'
     _description = 'Redemption Customer Config'
@@ -39,7 +38,7 @@ class rdm_customer_config_settings(osv.osv_memory):
 
 
     def set_default_enable_referal(self, cr, uid, ids, context=None):
-        ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
+        customer_config_ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
         config = self.browse(cr, uid, ids[0], context)
         enable_referal=config.enable_referal
-        self.pool.get('rdm.customer.config').write(cr, uid, ids, {'enable_referal': enable_referal})
+        self.pool.get('rdm.customer.config').write(cr, uid, customer_config_ids, {'enable_referal': enable_referal})
