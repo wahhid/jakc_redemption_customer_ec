@@ -117,3 +117,4 @@ class rdm_customer(osv.osv):
         return id                            
     
 rdm_customer()
+
