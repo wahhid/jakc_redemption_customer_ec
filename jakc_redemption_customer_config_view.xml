@@ -16,6 +16,8 @@
 	     				<group name="Customer">
 	     					<group>
 	     						<field name="enable_referal"/>
+	     						<field name="referal_point"/>
+	     						<field name="expired_duration"/>
 	     					</group>
 	     				</group>    
 	     			</div>	       

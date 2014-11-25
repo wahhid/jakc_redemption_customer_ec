@@ -1,5 +1,6 @@
 from openerp.osv import fields, osv
-
+from datetime import datetime
+from datetime import timedelta
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -50,11 +51,42 @@ class rdm_customer(osv.osv):
         self.write(cr,uid,id,{'state': 'active'},context=context)              
         return True    
         
+    def _get_trans(self, cr, uid, trans_id , context=None):
+        return self.browse(cr, uid, trans_id, context=context);
+    
+    def _add_referal_point(self, cr, uid, id, context=None):
+        _logger.info("Start Add Referal Point : " + str(id[0]))
+        
+        _logger.info("End Add Referal Point : " + str(id[0]))
+        
     def _referal_process(self, cr, uid, id, context=None):
+        _logger.info("Start Referal Process : " + str(id[0]))
+        customer_config = self.pool.get('rdm.customer.config').get_customer_config(cr, uid, context=context)
+        if customer_config.enable_referal:
+            trans_id = id[0]
+            trans = self._get_trans(cr, uid, trans_id, context)
+            if trans.ref_id:
+                _logger.info('Add Referal Point')
+                self._generate_referal_point(cr, uid, trans_id, trans.ref_id.id, customer_config.referal_point, customer_config.expired_duration, context=context)
+            else:
+                _logger.info('No Referal Point')    
         return True 
     
+    def _generate_referal_point(self, cr, uid, trans_id, customer_id, point, expired_duration, context=None):
+        _logger.info('Start Generate Point')
+        trans = self._get_trans(cr, uid, trans_id, context)
+        point_data = {}
+        point_data.update({'customer_id': customer_id})
+        point_data.update({'trans_id':str(trans.id)})
+        point_data.update({'trans_type': 'reference'})
+        point_data.update({'point':point})
+        expired_date = datetime.now() + timedelta(days=expired_duration)
+        point_data.update({'expired_date': expired_date})
+        self.pool.get('rdm.customer.point').create(cr, uid, point_data, context=context)
+        _logger.info('End Generate Coupon')
+        
     def _send_email_notification(self, cr, uid, values, context=None):
-        _logger.info(values['start_logger'])
+        _logger.info(values['Start Send Email Notification'])
         mail_mail = self.pool.get('mail.mail')
         mail_ids = []
         mail_ids.append(mail_mail.create(cr, uid, {
@@ -64,7 +96,7 @@ class rdm_customer(osv.osv):
             'body_html': values['body_html'],
             }, context=context))
         mail_mail.send(cr, uid, mail_ids, context=context)
-        _logger.info(values['end_logger'])          
+        _logger.info(values['End Send Email Notification'])          
             
 
     _columns = {                    
@@ -116,8 +148,7 @@ class rdm_customer(osv.osv):
         id =  super(rdm_customer, self).create(cr, uid, values, context=context)    
         self.set_enable(cr, uid, [id], context)
         self._referal_process(cr, uid, [id], context)
-        #Send Email Notification
-        
+        #Send Email Notification    
         return id                            
     
 rdm_customer()
