@@ -158,11 +158,25 @@ class rdm_customer(osv.osv):
         is_duplicate = self.check_duplicate(cr, uid, birth_date, email, sosial_id, context=context)
         if is_duplicate:
             raise osv.except_osv(('Warning'), ('Customer Already Exist'))
-        else:                                    
-            id =  super(rdm_customer, self).create(cr, uid, values, context=context)    
+        else:                           
+            #Create Customer         
+            id =  super(rdm_customer, self).create(cr, uid, values, context=context)
+                
+            #Enable Customer
             self.set_enable(cr, uid, [id], context)
+            
+            #Process Referal and Generate Point For Referal Customer
             self._referal_process(cr, uid, [id], context)
-            #Send Email Notification    
+            
+            #Send Email Notification for Congrat and Customer Web Access Password
+            redemption_config = self.pool.get('rdm.config').get_config(cr, uid, context=context)
+            if redemption_config and redemption_config.enable_email and values['receive_email'] and values['email'] :
+                email_data = {}
+                email_data.update({'email_from': 'info@taman-anggrek-mall.com'})
+                email_data.update({'email_to': values['email']})
+                email_data.update({'subject':'AYC Member Notification'})
+                email_data.update({'body_html':''})
+                self._send_email_notification(cr, uid, email_data, context=context) 
             return id                            
     
 rdm_customer()
