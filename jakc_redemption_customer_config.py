@@ -8,7 +8,7 @@ class rdm_customer_config(osv.osv):
     _description = 'Redemption Customer Config'
     
     def get_customer_config(self, cr, uid, context=None):
-        ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
+        ids = self.search(cr, uid, [('state','=', True),], context=context)
         if ids:
             return self.pool.get('rdm.customer.config').browse(cr, uid, uid, context=context)
         else:

@@ -85,6 +85,13 @@ class rdm_customer(osv.osv):
         self.pool.get('rdm.customer.point').create(cr, uid, point_data, context=context)
         _logger.info('End Generate Coupon')
         
+    def check_duplicate(self, cr, uid, birth_date, email, sosial_id,context=None):
+        customer_ids = self.search(cr, uid, [('birth_date','=', birth_date),('email','=',email),('social_id','=',sosial_id),], context=context)
+        if customer_ids:
+            return True
+        else:
+            return False
+        
     def _send_email_notification(self, cr, uid, values, context=None):
         _logger.info(values['Start Send Email Notification'])
         mail_mail = self.pool.get('mail.mail')
@@ -144,12 +151,19 @@ class rdm_customer(osv.osv):
         if 'tenant_id' in values.keys():                        
             tenant_id = values['tenant_id']
             if tenant_id is not None:
-                values.update({'contact_type': 'tenant'})                            
-        id =  super(rdm_customer, self).create(cr, uid, values, context=context)    
-        self.set_enable(cr, uid, [id], context)
-        self._referal_process(cr, uid, [id], context)
-        #Send Email Notification    
-        return id                            
+                values.update({'contact_type': 'tenant'})
+        birth_date = values.get('birth_date')
+        email = values.get('email')
+        sosial_id = values.get('social_id')
+        is_duplicate = self.check_duplicate(cr, uid, birth_date, email, sosial_id, context=context)
+        if is_duplicate:
+            raise osv.except_osv(('Warning'), ('Customer Already Exist'))
+        else:                                    
+            id =  super(rdm_customer, self).create(cr, uid, values, context=context)    
+            self.set_enable(cr, uid, [id], context)
+            self._referal_process(cr, uid, [id], context)
+            #Send Email Notification    
+            return id                            
     
 rdm_customer()
 
