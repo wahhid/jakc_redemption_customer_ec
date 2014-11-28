@@ -11,7 +11,8 @@
                         <button name="set_black_list" string="Black List" type="object" class="oe_highlight" states='active'/>
                         <button name="set_remove_black_list" string="Undo Black List" type="object" class="oe_highlight" states='blacklist'/>                        
                         <button name="set_disable" string="Disable" type="object" class="oe_highlight" states='active'/>
-						<button name="set_enable" string="Enable" type="object" class="oe_highlight" states='disable'/>	                                                                                                         
+						<button name="set_enable" string="Enable" type="object" class="oe_highlight" states='disable'/>
+						<button name="change_password" string="Change Password" type="object" class="oe_highlight" states='active'/>	                                                                                                         
                     </header>	                	
 					<sheet>
 	                    <group colspan="4">                            
@@ -98,6 +99,25 @@
             </field>
         </record>  		
               
+		<!-- CHANGE PASSWORD POPUP WINDOW -->        
+        <record model="ir.ui.view" id="view_rdm_customer_change_password_form">
+            <field name="name">rdm.customer.change.password.fom</field>
+            <field name="model">rdm.customer.change.password</field>						            					
+            <field name="arch" type="xml">
+                <form string="Redemption Customer Change Password" version="7.0">  
+                    <group>                                                                            
+                        <field name="password_new"/>
+                        <field name="password_confirm"/>   
+                    </group>                    
+                    <footer>
+                        <button name="change_password" string="Change Password" type="object" class="oe_highlight"/>    
+                        or                   
+                        <button string="Cancel" class="oe_link" special="cancel"/>                    
+                    </footer>                    
+                </form>
+            </field>
+        </record>	          
+                      
         <!-- RDM/ACTION -->
         <!-- CUSTOMER -->
         <record model="ir.ui.view" id="view_rdm_customer_filter">
@@ -115,10 +135,11 @@
                    <filter string="Tenant Contact" name="contact_type_tenant" domain="[('contact_type','=','tenant')]"/>
                    <filter string="Black List" name="blacklist_customer" domain="[('state','=','blacklist')]"/>
                    <filter string="Disable" name="disable_customer" domain="[('state','=','disable')]"/>
-                    				   	                 
                </search>
             </field>
         </record>    
+        
+		
         
 		<record model="ir.actions.act_window" id="action_rdm_customer">
             <field name="name">Customer</field>           

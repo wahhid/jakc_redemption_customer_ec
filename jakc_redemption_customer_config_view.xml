@@ -19,6 +19,13 @@
 	     						<field name="referal_point"/>
 	     						<field name="expired_duration"/>
 	     					</group>
+	     				</group>
+	     				<separator string="Duplicate Check Method"/>
+	     				<group name="Duplicate">
+	     					<group>
+	     						<field name="duplicate_email"/>
+	     						<field name="duplicate_social_id"/>
+	     					</group>
 	     				</group>    
 	     			</div>	       
 	            </form>

@@ -19,6 +19,28 @@ CONTACT_TYPES = [
     ('both','Customer or Tenant'),    
 ]
 
+
+class rdm_customer_change_password(osv.osv_memory):
+    _name = "rdm.customer.change.password"
+    _description = "Redemption Customer Change Password" 
+    
+    def change_password(self, cr, uid, ids, context=None):                
+        params = self.browse(cr, uid, ids, context=context)
+        param = params[0]           
+        customer_id = context.get('customer_id',False)
+        data = {}              
+        if param.password_new == param.password_confirm:
+            data.update({'password':param.password_new})
+            self.pool.get('rdm.customer').write(cr, uid, [customer_id], data, context=context)                                                
+        return True
+    
+    _columns = {
+        'password_new': fields.char('New Password', size=50),
+        'password_confirm': fields.text('Confirm Password', size=50),
+    }    
+       
+rdm_customer_change_password()
+
 class rdm_customer(osv.osv):
     _name = 'rdm.customer'
     _description = 'Redemption Customer'
@@ -54,6 +76,18 @@ class rdm_customer(osv.osv):
     def _get_trans(self, cr, uid, trans_id , context=None):
         return self.browse(cr, uid, trans_id, context=context);
     
+    def change_password(self, cr, uid, ids, context=None):
+        return {
+               'type': 'ir.actions.act_window',
+               'name': 'Change Password',
+               'view_mode': 'form',
+               'view_type': 'form',                              
+               'res_model': 'rdm.customer.change.password',
+               'nodestroy': True,
+               'target':'new',
+               'context': {'customer_id': ids[0]},
+        } 
+        
     def _add_referal_point(self, cr, uid, id, context=None):
         _logger.info("Start Add Referal Point : " + str(id[0]))
         
@@ -61,7 +95,7 @@ class rdm_customer(osv.osv):
         
     def _referal_process(self, cr, uid, id, context=None):
         _logger.info("Start Referal Process : " + str(id[0]))
-        customer_config = self.pool.get('rdm.customer.config').get_customer_config(cr, uid, context=context)
+        customer_config = self.pool.get('rdm.customer.config').get_config(cr, uid, context=context)
         if customer_config.enable_referal:
             trans_id = id[0]
             trans = self._get_trans(cr, uid, trans_id, context)
@@ -85,12 +119,17 @@ class rdm_customer(osv.osv):
         self.pool.get('rdm.customer.point').create(cr, uid, point_data, context=context)
         _logger.info('End Generate Coupon')
         
-    def check_duplicate(self, cr, uid, birth_date, email, sosial_id,context=None):
-        customer_ids = self.search(cr, uid, [('birth_date','=', birth_date),('email','=',email),('social_id','=',sosial_id),], context=context)
-        if customer_ids:
-            return True
-        else:
-            return False
+    def check_duplicate(self, cr, uid, values, context=None):      
+        customer_config = self.pool.get('rdm.customer.config').get_config(cr, uid, context=context)
+        if customer_config.duplicate_email:
+            customer_ids = self.search(cr, uid, [('email','=',values.get('email')),], context=context)
+            if customer_ids:
+                return True,'Email Duplicate'
+        if customer_config.duplicate_social_id:
+            customer_ids = self.search(cr, uid, [('social_id','=',values.get('social_id')),], context=context)
+            if customer_ids:
+                return True,'Social ID Duplicate'
+        return False,'Not Duplicate' 
         
     def _send_email_notification(self, cr, uid, values, context=None):
         _logger.info(values['Start Send Email Notification'])
@@ -152,12 +191,10 @@ class rdm_customer(osv.osv):
             tenant_id = values['tenant_id']
             if tenant_id is not None:
                 values.update({'contact_type': 'tenant'})
-        birth_date = values.get('birth_date')
-        email = values.get('email')
-        sosial_id = values.get('social_id')
-        is_duplicate = self.check_duplicate(cr, uid, birth_date, email, sosial_id, context=context)
+
+        is_duplicate, message = self.check_duplicate(cr, uid, values, context=context)
         if is_duplicate:
-            raise osv.except_osv(('Warning'), ('Customer Already Exist'))
+            raise osv.except_osv(('Warning'), (message))
         else:                           
             #Create Customer         
             id =  super(rdm_customer, self).create(cr, uid, values, context=context)
@@ -169,8 +206,9 @@ class rdm_customer(osv.osv):
             self._referal_process(cr, uid, [id], context)
             
             #Send Email Notification for Congrat and Customer Web Access Password
+            trans = self._get_trans(cr, uid, [id], context)
             redemption_config = self.pool.get('rdm.config').get_config(cr, uid, context=context)
-            if redemption_config and redemption_config.enable_email and values['receive_email'] and values['email'] :
+            if redemption_config and redemption_config.enable_email and trans.receive_email and trans.email :
                 email_data = {}
                 email_data.update({'email_from': 'info@taman-anggrek-mall.com'})
                 email_data.update({'email_to': values['email']})
