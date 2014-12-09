@@ -15,6 +15,9 @@
                         <separator string="Customer Configuration"/>
 	     				<group name="Customer">
 	     					<group>
+	     						<field name="enable_new_member"/>
+	     						<field name="new_member_point"/>
+	     						<field name="new_member_expired_duration"/>	     					
 	     						<field name="enable_referal"/>
 	     						<field name="referal_point"/>
 	     						<field name="expired_duration"/>

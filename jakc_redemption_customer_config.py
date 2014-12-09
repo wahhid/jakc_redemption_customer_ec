@@ -15,7 +15,10 @@ class rdm_customer_config(osv.osv):
             return None
             
     _columns = {
-        'enable_referal' : fields.boolean('Enable Referal'),
+        'enable_new_member': fields.boolean('Enable New Member'),
+        'new_member_point': fields.integer('New Member Point'),
+        'new_member_expired_duration': fields.integer('New Member Expired Duration'),        
+        'enable_referal': fields.boolean('Enable Referal'),
         'referal_point': fields.integer('Referal Point'),
         'expired_duration': fields.integer('Expired Duration'),
         'duplicate_email': fields.boolean('Duplicate Email'), 
@@ -35,12 +38,67 @@ class rdm_customer_config_settings(osv.osv_memory):
     _name = 'rdm.customer.config.settings'
     _inherit = 'res.config.settings'
     _columns = {
+        'enable_new_member': fields.boolean('Enable New Member'),
+        'new_member_point': fields.integer('New Member Point'),
+        'new_member_expired_duration': fields.integer('New Member Expired Duration'),        
         'enable_referal': fields.boolean('Enable Referal'),
         'referal_point': fields.integer('Referal Point'),
         'expired_duration': fields.integer('Expired Duration'),
         'duplicate_email': fields.boolean('Duplicate Email'), 
         'duplicate_social_id': fields.boolean('Duplicate Social ID'),
     }
+
+
+    def get_default_enable_new_member(self, cr, uid, fields, context=None):
+        ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
+        if ids:
+            enable_new_member = self.pool.get('rdm.customer.config').browse(cr, uid, uid, context=context).enable_new_member
+        else: 
+            customer_data = {}
+            result_id = self.pool.get('rdm.customer.config').create(cr, uid, customer_data, context=context)
+            enable_new_member = False
+        return {'enable_new_member': enable_new_member}
+
+
+    def set_default_enable_new_member(self, cr, uid, ids, context=None):
+        config_ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
+        config = self.browse(cr, uid, ids[0], context)
+        enable_new_member=config.enable_new_member
+        self.pool.get('rdm.customer.config').write(cr, uid, config_ids, {'enable_new_member': enable_new_member})
+
+    def get_default_new_member_point(self, cr, uid, fields, context=None):    
+        ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
+        if ids:
+            new_member_point = self.pool.get('rdm.customer.config').browse(cr, uid, uid, context=context).new_member_point
+        else:
+            customer_data = {}
+            result_id = self.pool.get('rdm.customer.config').create(cr, uid, customer_data, context=context)
+            new_member_point = 0
+        return {'new_member_point': new_member_point}
+    
+    def set_default_new_member_point(self, cr, uid, ids, context=None):
+        config_ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
+        config = self.browse(cr, uid, ids[0], context)
+        new_member_point=config.new_member_point
+        self.pool.get('rdm.customer.config').write(cr, uid, config_ids, {'new_member_point': new_member_point})
+        
+        
+    def get_default_new_member_expired_duration(self, cr, uid, fields, context=None):    
+        ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
+        if ids:
+            new_member_expired_duration = self.pool.get('rdm.customer.config').browse(cr, uid, uid, context=context).new_member_expired_duration
+        else:
+            customer_data = {}
+            result_id = self.pool.get('rdm.customer.config').create(cr, uid, customer_data, context=context)
+            new_member_expired_duration = 0
+        return {'new_member_expired_duration': new_member_expired_duration}
+    
+    def set_default_new_member_expired_duration(self, cr, uid, ids, context=None):
+        config_ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
+        config = self.browse(cr, uid, ids[0], context)
+        new_member_expired_duration=config.new_member_expired_duration
+        self.pool.get('rdm.customer.config').write(cr, uid, config_ids, {'new_member_expired_duration': new_member_expired_duration})
+
 
     def get_default_enable_referal(self, cr, uid, fields, context=None):
         ids = self.pool.get('rdm.customer.config').search(cr, uid, [('state','=', True),], context=context)
