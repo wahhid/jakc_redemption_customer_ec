@@ -107,8 +107,11 @@ class rdm_customer(osv.osv):
         return True 
     
     def _generate_referal_point(self, cr, uid, trans_id, customer_id, point, expired_duration, context=None):
-        _logger.info('Start Generate Point')
+        _logger.info('Start Generate Referal Point')
+        rdm_config = self.pool.get('rdm.config').get_config(cr, uid, context=context)
         trans = self._get_trans(cr, uid, trans_id, context)
+        customer_id = trans.customer_id
+        ref_id = trans.ref_id
         point_data = {}
         point_data.update({'customer_id': customer_id})
         point_data.update({'trans_id':str(trans.id)})
@@ -117,7 +120,14 @@ class rdm_customer(osv.osv):
         expired_date = datetime.now() + timedelta(days=expired_duration)
         point_data.update({'expired_date': expired_date})
         self.pool.get('rdm.customer.point').create(cr, uid, point_data, context=context)
-        _logger.info('End Generate Coupon')
+        if customer_id.receive_email:            
+            email_data = {}
+            email_data.update({'email_from':rdm_config.email_from})
+            email_data.update({'email_to': ref_id.email})
+            email_data.update({'subject': 'Referal Point Bonus'})
+            email_data.update({'body_html': 'Referal Point Bonus'})
+            self._send_email_notification(cr, uid, email_data, context=context)
+        _logger.info('End Generate Referal Point')
         
     def check_duplicate(self, cr, uid, values, context=None):      
         customer_config = self.pool.get('rdm.customer.config').get_config(cr, uid, context=context)
