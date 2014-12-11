@@ -102,9 +102,9 @@ class rdm_customer(osv.osv):
             point_data = {}
             point_data.update({'customer_id': trans_id})
             point_data.update({'trans_id': trans_id})
-            point_data.update({'trans_type': 'new_member'})
+            point_data.update({'trans_type': 'member'})
             point_data.update({'point': customer_config.new_member_point})
-            expired_date = datetime.now() + timedelta(days=customer_config.new_member_expired_date)
+            expired_date = datetime.now() + timedelta(days=customer_config.new_member_expired_duration)
             point_data.update({'expired_date': expired_date})
             self.pool.get('rdm.customer.point').add_or_deduct_point(cr, uid, point_data, context=context)
             #if trans.receive_email:
