@@ -121,9 +121,9 @@ class rdm_customer(osv.osv):
             trans = self._get_trans(cr, uid, trans_id, context)
             if trans.ref_id:
                 _logger.info('Start Add Referal Point')
-                ref_id = trans.ref_id.id
+                ref_id = trans.ref_id
                 point_data = {}
-                point_data.update({'customer_id': ref_id})
+                point_data.update({'customer_id': ref_id.id})
                 point_data.update({'trans_id':str(trans.id)})
                 point_data.update({'trans_type': 'reference'})
                 point_data.update({'point':customer_config.referal_point})
