@@ -112,11 +112,11 @@ class rdm_customer(osv.osv):
                 
         _logger.info("End New Member Process : " + str(id[0]))
         
-    def _referal_process(self, cr, uid, id, context=None):
+    def _referal_process(self, cr, uid, ids, context=None):
         _logger.info("Start Referal Process : " + str(id[0]))
         customer_config = self.pool.get('rdm.customer.config').get_config(cr, uid, context=context)
         if customer_config.enable_referal:
-            trans_id = id[0]
+            trans_id = ids[0]
             trans = self._get_trans(cr, uid, trans_id, context)
             if trans.ref_id:
                 _logger.info('Start Add Referal Point')
@@ -128,7 +128,7 @@ class rdm_customer(osv.osv):
     def _generate_referal_point(self, cr, uid, trans_id, customer_id, point, expired_duration, context=None):
         _logger.info('Start Generate Referal Point')
         rdm_config = self.pool.get('rdm.config').get_config(cr, uid, context=context)
-        trans = self._get_trans(cr, uid, trans_id, context)
+        trans = self._get_trans(cr, uid, [trans_id], context)
         customer_id = trans.customer_id
         ref_id = trans.ref_id
         point_data = {}
