@@ -129,7 +129,7 @@ class rdm_customer(osv.osv):
         _logger.info('Start Generate Referal Point')
         rdm_config = self.pool.get('rdm.config').get_config(cr, uid, context=context)
         trans = self._get_trans(cr, uid, [trans_id], context)
-        customer_id = trans.customer_id
+        customer_id = trans.id
         ref_id = trans.ref_id
         point_data = {}
         point_data.update({'customer_id': customer_id})
