@@ -113,7 +113,7 @@ class rdm_customer(osv.osv):
         _logger.info("End New Member Process : " + str(id[0]))
         
     def _referal_process(self, cr, uid, ids, context=None):
-        _logger.info("Start Referal Process : " + str(id[0]))
+        _logger.info("Start Referal Process : " + str(ids[0]))
         customer_config = self.pool.get('rdm.customer.config').get_config(cr, uid, context=context)
         if customer_config.enable_referal:
             trans_id = ids[0]
