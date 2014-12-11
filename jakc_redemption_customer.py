@@ -92,6 +92,25 @@ class rdm_customer(osv.osv):
         _logger.info("Start Add Referal Point : " + str(id[0]))
         
         _logger.info("End Add Referal Point : " + str(id[0]))
+    
+    def _new_member_process(self, cr, uid, id, context=None):
+        _logger.info("Start New Member Process : " + str(id[0]))
+        customer_config = self.pool.get('rdm.customer.config').get_config(cr, uid, context=context)
+        if customer_config.enable_new_member:
+            trans_id = id[0]
+            trans = self._get_trans(cr, uid, trans_id, context)
+            point_data = {}
+            point_data.update({'customer_id': trans_id})
+            point_data.update({'trans_id': trans_id})
+            point_data.update({'trans_type': 'new_member'})
+            point_data.update({'point': customer_config.new_member_point})
+            expired_date = datetime.now() + timedelta(days=customer_config.new_member_expired_date)
+            point_data.update({'expired_date': expired_date})
+            self.pool.get('rdm.customer.point').add_or_deduct_point(cr, uid, point_data, context=context)
+            #if trans.receive_email:
+                #Send Email Notification
+                
+        _logger.info("End New Member Process : " + str(id[0]))
         
     def _referal_process(self, cr, uid, id, context=None):
         _logger.info("Start Referal Process : " + str(id[0]))
@@ -100,7 +119,7 @@ class rdm_customer(osv.osv):
             trans_id = id[0]
             trans = self._get_trans(cr, uid, trans_id, context)
             if trans.ref_id:
-                _logger.info('Add Referal Point')
+                _logger.info('Start Add Referal Point')
                 self._generate_referal_point(cr, uid, trans_id, trans.ref_id.id, customer_config.referal_point, customer_config.expired_duration, context=context)
             else:
                 _logger.info('No Referal Point')    
@@ -154,7 +173,19 @@ class rdm_customer(osv.osv):
         mail_mail.send(cr, uid, mail_ids, context=context)
         _logger.info(values['End Send Email Notification'])          
             
-
+    def _send_create_email_notification(self, cr, uid, ids, context=None):
+        trans_id = ids[0]
+        trans = self._get_trans(cr, uid, trans_id, context=context)
+        rdm_config = self.pool.get('rdm.config').get_config(cr, uid, context=context)
+        
+        if rdm_config and rdm_config.enable_email and trans.receive_email and trans.email :
+            email_data = {}
+            email_data.update({'email_from': 'info@taman-anggrek-mall.com'})
+            email_data.update({'email_to': trans.email})
+            email_data.update({'subject':'AYC Member Notification'})
+            email_data.update({'body_html':''})
+            self._send_email_notification(cr, uid, email_data, context=context)
+                
     _columns = {                    
         'type': fields.many2one('rdm.customer.type','Type'),        
         'contact_type': fields.selection(CONTACT_TYPES,'Contact Type',size=16),            
@@ -191,7 +222,8 @@ class rdm_customer(osv.osv):
     }
     
     _defaults = {
-         'contact_type': lambda *a : 'customer',               
+         'contact_type': lambda *a : 'customer',
+         'receive_email': lambda *a : False,               
          'state': lambda *a: 'draft',
          'deleted': lambda *a: False,      
     }
@@ -203,6 +235,7 @@ class rdm_customer(osv.osv):
                 values.update({'contact_type': 'tenant'})
 
         is_duplicate, message = self.check_duplicate(cr, uid, values, context=context)
+
         if is_duplicate:
             raise osv.except_osv(('Warning'), (message))
         else:                           
@@ -212,19 +245,15 @@ class rdm_customer(osv.osv):
             #Enable Customer
             self.set_enable(cr, uid, [id], context)
             
-            #Process Referal and Generate Point For Referal Customer
+            #Process New Member and Generate Point if Enable
+            self._new_member_process(cr, uid, [id], context)
+            
+            #Process Referal and Generate Point For Reference Customer If Enable
             self._referal_process(cr, uid, [id], context)
             
             #Send Email Notification for Congrat and Customer Web Access Password
-            trans = self._get_trans(cr, uid, [id], context)
-            redemption_config = self.pool.get('rdm.config').get_config(cr, uid, context=context)
-            if redemption_config and redemption_config.enable_email and trans.receive_email and trans.email :
-                email_data = {}
-                email_data.update({'email_from': 'info@taman-anggrek-mall.com'})
-                email_data.update({'email_to': values['email']})
-                email_data.update({'subject':'AYC Member Notification'})
-                email_data.update({'body_html':''})
-                self._send_email_notification(cr, uid, email_data, context=context) 
+            self._send_create_email_notification(cr, uid, [id], context)
+            
             return id                            
     
 rdm_customer()
