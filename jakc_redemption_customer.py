@@ -161,7 +161,7 @@ class rdm_customer(osv.osv):
         return False,'Not Duplicate' 
         
     def _send_email_notification(self, cr, uid, values, context=None):
-        _logger.info(values['Start Send Email Notification'])
+        _logger.info('Start Send Email Notification')
         mail_mail = self.pool.get('mail.mail')
         mail_ids = []
         mail_ids.append(mail_mail.create(cr, uid, {
@@ -171,7 +171,7 @@ class rdm_customer(osv.osv):
             'body_html': values['body_html'],
             }, context=context))
         mail_mail.send(cr, uid, mail_ids, context=context)
-        _logger.info(values['End Send Email Notification'])          
+        _logger.info('End Send Email Notification')          
             
     def _send_create_email_notification(self, cr, uid, ids, context=None):
         trans_id = ids[0]
