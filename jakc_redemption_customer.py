@@ -130,7 +130,7 @@ class rdm_customer(osv.osv):
                 expired_date = datetime.now() + timedelta(days=customer_config.expired_duration)
                 point_data.update({'expired_date': expired_date})
                 self.pool.get('rdm.customer.point').create(cr, uid, point_data, context=context)
-                if rdm_config.receive_email:
+                if rdm_config.enable_email:
                     if trans.receive_email:
                         email_data = {}
                         email_data.update({'email_from':rdm_config.email_from})
