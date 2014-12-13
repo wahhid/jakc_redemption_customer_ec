@@ -106,10 +106,7 @@ class rdm_customer(osv.osv):
             point_data.update({'point': customer_config.new_member_point})
             expired_date = datetime.now() + timedelta(days=customer_config.new_member_expired_duration)
             point_data.update({'expired_date': expired_date})
-            self.pool.get('rdm.customer.point').add_or_deduct_point(cr, uid, point_data, context=context)
-            #if trans.receive_email:
-                #Send Email Notification
-                
+            self.pool.get('rdm.customer.point').add_or_deduct_point(cr, uid, point_data, context=context)                
         _logger.info("End New Member Process : " + str(id[0]))
         
     def _referal_process(self, cr, uid, ids, context=None):
