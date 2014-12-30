@@ -105,8 +105,8 @@ class rdm_customer(osv.osv):
             point_data.update({'trans_type': 'member'})
             point_data.update({'point': customer_config.new_member_point})
             expired_date = datetime.now() + timedelta(days=customer_config.new_member_expired_duration)
-            point_data.update({'expired_date': expired_date})
-            self.pool.get('rdm.customer.point').add_or_deduct_point(cr, uid, point_data, context=context)                
+            point_data.update({'expired_date': expired_date})            
+            self.pool.get('rdm.customer.point').add_point(cr, uid, point_data, context=context)                
         _logger.info("End New Member Process : " + str(id[0]))
         
     def _referal_process(self, cr, uid, ids, context=None):
@@ -126,7 +126,7 @@ class rdm_customer(osv.osv):
                 point_data.update({'point':customer_config.referal_point})
                 expired_date = datetime.now() + timedelta(days=customer_config.expired_duration)
                 point_data.update({'expired_date': expired_date})
-                self.pool.get('rdm.customer.point').create(cr, uid, point_data, context=context)
+                self.pool.get('rdm.customer.point').add_point(cr, uid, point_data, context=context)
                 if rdm_config.enable_email:
                     if trans.receive_email:
                         email_data = {}
