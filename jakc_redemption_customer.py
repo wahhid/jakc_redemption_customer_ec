@@ -73,7 +73,7 @@ class rdm_customer(osv.osv):
         self.write(cr,uid,id,{'state': 'active'},context=context)              
         return True    
         
-    def _get_trans(self, cr, uid, trans_id , context=None):
+    def get_trans(self, cr, uid, trans_id , context=None):
         return self.browse(cr, uid, trans_id, context=context);
     
     def change_password(self, cr, uid, ids, context=None):
@@ -98,7 +98,7 @@ class rdm_customer(osv.osv):
         customer_config = self.pool.get('rdm.customer.config').get_config(cr, uid, context=context)
         if customer_config.enable_new_member:
             trans_id = id[0]
-            trans = self._get_trans(cr, uid, trans_id, context)
+            trans = self.get_trans(cr, uid, trans_id, context)
             point_data = {}
             point_data.update({'customer_id': trans_id})
             point_data.update({'trans_id': trans_id})
@@ -115,7 +115,7 @@ class rdm_customer(osv.osv):
         customer_config = self.pool.get('rdm.customer.config').get_config(cr, uid, context=context)
         if customer_config.enable_referal:
             trans_id = ids[0]
-            trans = self._get_trans(cr, uid, trans_id, context)
+            trans = self.get_trans(cr, uid, trans_id, context)
             if trans.ref_id:
                 _logger.info('Start Add Referal Point')
                 ref_id = trans.ref_id
@@ -166,7 +166,7 @@ class rdm_customer(osv.osv):
             
     def _send_create_email_notification(self, cr, uid, ids, context=None):
         trans_id = ids[0]
-        trans = self._get_trans(cr, uid, trans_id, context=context)
+        trans = self.get_trans(cr, uid, trans_id, context=context)
         rdm_config = self.pool.get('rdm.config').get_config(cr, uid, context=context)
         
         if rdm_config and rdm_config.enable_email and trans.receive_email and trans.email :
