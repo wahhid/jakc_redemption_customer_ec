@@ -129,7 +129,7 @@ class rdm_customer(osv.osv):
         _logger.info("End Add New Member Point")
             
     def _add_referal_point(self, cr, uid, ids, context=None):        
-        _logger.info("Start Add Referal Point : " + str(id[0]))
+        _logger.info("Start Add Referal Point")
         trans_id = ids[0]
         trans = self.get_trans(cr, uid, trans_id, context)        
         rdm_customer_config = self.pool.get('rdm.customer.config').get_config(cr, uid, context=context)    
@@ -179,7 +179,7 @@ class rdm_customer(osv.osv):
                 if trans.ref_id.receive_email and rdm_config.enable_email:
                     _logger.info('Send Email Referal')
                     email_obj = self.pool.get('email.template')        
-                    template_ids = customer_config._email_tmpl
+                    template_ids = customer_config.referal_email_tmpl
                     email = email_obj.browse(cr, uid, template_ids)  
                     email_obj.write(cr, uid, template_ids, {'email_from': email.email_from,
                                                     'email_to': email.email_to,
