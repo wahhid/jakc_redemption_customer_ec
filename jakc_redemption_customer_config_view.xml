@@ -16,11 +16,14 @@
 	     				<group name="Customer">
 	     					<group>
 	     						<field name="enable_new_member"/>
-	     						<field name="new_member_point"/>
+	     						<field name="new_member_email_tmpl"/>	     						
+	     						<field name="new_member_point"/>	     						
 	     						<field name="new_member_expired_duration"/>	     					
 	     						<field name="enable_referal"/>
 	     						<field name="referal_point"/>
+	     						<field name="referal_email_tmpl"/>
 	     						<field name="expired_duration"/>
+	     						<field name="reset_password_email_tmpl"/>
 	     					</group>
 	     				</group>
 	     				<separator string="Duplicate Check Method"/>
